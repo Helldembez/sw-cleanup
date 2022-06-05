@@ -1,0 +1,20 @@
+ul.nav {
+    padding: 10px;
+    background-color: #3D99CE;
+    align-content: center;
+    margin: 0;
+}
+
+ul.nav>li {
+    display: inline-block;
+    padding: 10px 20px;
+}
+
+ul.nav>li:hover {
+    background-color: #2779BF;
+}
+
+ul.nav>li>a {
+    color: white;
+    text-decoration: none;
+}

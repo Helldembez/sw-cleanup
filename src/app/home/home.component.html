@@ -1,0 +1,53 @@
+<!-- <div class="container"> -->
+  <input type="file" class="file-input button is-dark" (change)="onFileSelected($event)" #fileUpload>
+  <div class="file-upload">
+    {{fileLocation || "No file uploaded yet."}}
+
+    <button type="button" class="btn btn-dark" (click)="fileUpload.click()">
+      <mat-icon>Pick File</mat-icon>
+    </button>
+  </div>
+  <button (click)="loadFile()" class="btn btn-dark">Parse</button>
+  <button (click)="clear()" class="btn btn-dark">Clear</button>
+
+
+  <table class="table table-dark table-striped">
+    <thead>
+      <th>Set</th>
+      <th>Slot</th>
+      <th>Level</th>
+      <th>Stat</th>
+      <th>Prefix</th>
+      <th>Substat 1</th>
+      <th>Substat 2</th>
+      <th>Substat 3</th>
+      <th>Substat 4</th>
+      <th>Action</th>
+      <th>Potential Value</th>
+      <th>Build Type</th>
+      <th colspan="4">Statistical assumption of what rune will roll/gem/grind into</th>
+      <th>Sub to gem</th>
+    </thead>
+    <tbody>
+      <tr *ngFor="let rune of runes">
+        <td>{{RuneSet[rune.set]}}</td>
+        <td>{{rune.slot}}</td>
+        <td>{{rune.level}}</td>
+        <td>{{rune.value}}</td>
+        <td>{{rune.prefix}}</td>
+        <td>{{rune.sub1}}</td>
+        <td>{{rune.sub2}}</td>
+        <td>{{rune.sub3}}</td>
+        <td>{{rune.sub4}}</td>
+        <td>{{rune.action}}</td>
+        <td>{{rune.potValue}}</td>
+        <td>{{BuildType[rune.build]}}</td>
+        <td>{{rune.bestPreset.sub1.toGemGrindString()}}</td>
+        <td>{{rune.bestPreset.sub2.toGemGrindString()}}</td>
+        <td>{{rune.bestPreset.sub3.toGemGrindString()}}</td>
+        <td>{{rune.bestPreset.sub4.toGemGrindString()}}</td>
+        <td>{{rune.bestPreset.subSlotToGem}}</td>
+      </tr>
+    </tbody>
+  </table>
+<!-- </div> -->
