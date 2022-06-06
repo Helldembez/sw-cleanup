@@ -1,3 +1,5 @@
+import { BuildType } from "./models"
+
 enum RuneSet {
     Energy = 1,
     Guard = 2,
@@ -220,4 +222,47 @@ const grindGemTable: Map<Number, number> = new Map([
     [1, 1]
 ])
 
-export { valuesForStat, minMaxForStat, maxRollsForStat, flatStatsForStat, avgBaseForStatPerType, minMaxForGrind, minMaxForGem, grindGemTable, statsInSlot, allStats, Stat, RuneSet, Slot, MonsterType, Action }
+class Properties {
+    level = 5
+    brokenRunes = 4
+    powerUp = 5
+    gemGrind = 2
+    Focus = new Map([
+        [BuildType["Fast DD"], 3],
+        [BuildType["Slow DD"], 1],
+        [BuildType["Def DD"], 1],
+        [BuildType.Bomber, 1],
+        [BuildType.Support, 3],
+        [BuildType["PvP Def"], 1],
+        [BuildType.Bruiser, 3]
+    ])
+}
+
+function getProperties(): Properties {
+    let test = window.localStorage.getItem("properties")
+    if (!test) {
+        window.localStorage.setItem("properties", JSON.stringify(new Properties(), (key, value) => {
+            if (value instanceof Map) {
+                return {
+                    dataType: 'Map',
+                    value: Array.from(value.entries()),
+                };
+            } else {
+                return value;
+            }
+        }))
+    }
+
+    let properties: Properties = JSON.parse(window.localStorage.getItem("properties"), (key, value) => {
+        if (typeof value === 'object' && value !== null) {
+            if (value.dataType === 'Map') {
+                return new Map(value.value);
+            }
+        }
+        return value;
+    })
+
+    return properties
+}
+
+export { valuesForStat, minMaxForStat, maxRollsForStat, flatStatsForStat, avgBaseForStatPerType, minMaxForGrind, minMaxForGem, grindGemTable, statsInSlot, allStats, Stat, RuneSet, Slot, MonsterType, Action, Properties, getProperties }

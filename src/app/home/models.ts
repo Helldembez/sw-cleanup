@@ -1,5 +1,4 @@
-import { Console } from "console"
-import { Stat, Slot, RuneSet, MonsterType, avgBaseForStatPerType, flatStatsForStat, valuesForStat, minMaxForGrind, minMaxForStat, grindGemTable, statsInSlot, minMaxForGem, maxRollsForStat, allStats, Action } from "./values"
+import { Stat, Slot, RuneSet, MonsterType, avgBaseForStatPerType, flatStatsForStat, valuesForStat, minMaxForGrind, minMaxForStat, grindGemTable, statsInSlot, minMaxForGem, maxRollsForStat, allStats, Action, Properties, getProperties } from "./values"
 
 enum BuildType {
   "Fast DD",
@@ -11,21 +10,6 @@ enum BuildType {
   "Bruiser"
 }
 
-const PROPERTIES = new class Properties {
-  level = 5 // 2 = Beginner, 4 = Fighter, 6 = Guardian, 8 = Legend
-  brokenRunes = 4 // 1 = No different, 2 = All the time, 3 = Keep good ones, 4 = Only the best, 5 = No broken
-  powerUp = 5
-  gemGrind = 2
-  Focus = new Map([
-    [BuildType["Fast DD"], 3],
-    [BuildType["Slow DD"], 1],
-    [BuildType["Def DD"], 1],
-    [BuildType.Bomber, 1],
-    [BuildType.Support, 3],
-    [BuildType["PvP Def"], 1],
-    [BuildType.Bruiser, 3]
-  ])
-}
 
 class Rune {
   id: number
@@ -49,6 +33,7 @@ class Rune {
   bestPreset: PresetInstance
 
   constructor(rune: any) {
+    console.log(getProperties().level)
     this.id = rune.rune_id
     this.set = rune.set_id as RuneSet
     this.slot = rune.slot_no
@@ -69,7 +54,7 @@ class Rune {
   }
 
   private calculateAction() {
-    if (this.potValue < PROPERTIES.level) return Action.SELL
+    if (this.potValue < getProperties().level) return Action.SELL
     if (this.level >= 12) return Action.KEEP
     return Action.POWERUP
   }
@@ -86,8 +71,8 @@ class Rune {
 
   calculateBestPreset() {
     const bestPreset = Array.from(presets).map(([type, preset]) => {
-      const instance = new PresetInstance(preset, this)
-      instance.calculatePotentialValue()
+      const instance = new PresetInstance(preset)
+      instance.calculatePotentialValue(this)
       return instance
     }).sort((a, b) => {
       if (a.potential < b.potential) return 1
@@ -112,9 +97,6 @@ class Value {
     this.value = value
     this.reapp = reapp
     this.grind = grind
-    if (grind === undefined) {
-      console.log("wtf")
-    }
   }
 
   toString() {
@@ -127,7 +109,7 @@ class Value {
     } else {
       const grind = this.grind > 0 ? "[" + this.grind + "]" : ""
       const reapp = this.reapp ? "🗘" : ""
-      return this.value + " " + grind + " " + reapp + " " + Stat[this.stat]
+      return (this.value + this.grind) + " " + grind + " " + reapp + " " + Stat[this.stat]
     }
   }
 
@@ -138,7 +120,6 @@ class Value {
 
 class PresetInstance { // fields that are used in private functions as private field instead of param?
   private preset: Preset
-  private rune: Rune
   private sub1: Value
   private sub2: Value
   private sub3: Value
@@ -150,22 +131,21 @@ class PresetInstance { // fields that are used in private functions as private f
   build: BuildType
   potential: number
 
-  constructor(preset: Preset, rune: Rune) {
+  constructor(preset: Preset) {
     this.preset = preset
-    this.rune = rune
     this.build = preset.build
   }
 
-  calculatePotentialValue() {
-    if (this.rune.slot % 2 === 0 && !this.preset.containsStatInEvenSlots(this.rune.value.stat)) {
+  calculatePotentialValue(rune: Rune) {
+    if (rune.slot % 2 === 0 && !this.preset.containsStatInEvenSlots(rune.value.stat)) {
       this.potential = 0
     } else {
-      this.sub1 = this.calculatePotentialSubs(this.rune.sub1, 1)
-      this.sub2 = this.calculatePotentialSubs(this.rune.sub2, 2)
-      this.sub3 = this.calculatePotentialSubs(this.rune.sub3, 3)
-      this.sub4 = this.calculatePotentialSubs(this.rune.sub4, 4)
+      this.sub1 = this.calculatePotentialSubs(rune.sub1, 1, rune)
+      this.sub2 = this.calculatePotentialSubs(rune.sub2, 2, rune)
+      this.sub3 = this.calculatePotentialSubs(rune.sub3, 3, rune)
+      this.sub4 = this.calculatePotentialSubs(rune.sub4, 4, rune)
       this.subSlotToGem = this.calculateStatToGem()
-      this.stat = this.calculateStat()
+      this.stat = this.calculateStat(rune)
       this.gemValue = this.calculateGemValue(this.valueForNumber())
       this.grindValue = this.calculateGrindValue(this.valueForNumber())
 
@@ -177,20 +157,16 @@ class PresetInstance { // fields that are used in private functions as private f
       }
       
 
-      let potential = (this.preset.normalizedValueOfSlot(this.rune.slot) + this.calculateValueForPrefix() + this.calculatePotentialForSubs() + this.calculateGradeValue())
-      potential *= this.scalemainstatorsomeshit()
-      potential *= this.scaleToSet()
-      potential *= this.preset.normalize.multiplyFactor.get(this.rune.slot)
+      let potential = (this.preset.normalizedValueOfSlot(rune.slot) + this.calculateValueForPrefix(rune) + this.calculatePotentialForSubs() + this.calculateGradeValue(rune))
+      potential *= this.scalemainstatorsomeshit(rune)
+      potential *= this.scaleToSet(rune)
+      potential *= this.preset.normalize.multiplyFactor.get(rune.slot)
       this.potential = ROUND(potential, 2)
-      if (this.rune.value.value === 1530 && this.rune.set === RuneSet.Energy && this.build === BuildType.Bruiser) {
-        console.log(this.potential)
-        console.log("plusses: " +  (  this.calculateGradeValue()))
-      }
     }
   }
 
-  private scalemainstatorsomeshit(): number {
-    const val = this.preset.statsCountForEvenSlots.get(this.rune.slot).get(this.rune.value.stat)
+  private scalemainstatorsomeshit(rune: Rune): number {
+    const val = this.preset.statsCountForEvenSlots.get(rune.slot).get(rune.value.stat)
     if (val > 0) {
       return val
     } else {
@@ -198,24 +174,21 @@ class PresetInstance { // fields that are used in private functions as private f
     }
   }
 
-  private scaleToSet() {
-    if (this.preset.preferred_set.includes(this.rune.set)) {
+  private scaleToSet(rune: Rune) {
+    if (this.preset.preferred_set.includes(rune.set)) {
       return 1
-    } else if (this.preset.acceptable_set.includes(this.rune.set)) {
+    } else if (this.preset.acceptable_set.includes(rune.set)) {
       return 0.85
     } else {
       return 0.70
     }
   }
 
-  private calculateGradeValue(): number {
-    if (this.rune.grade < 6) {
-      const stat = isFlatStat(this.rune.value.stat) ? flatStatToPercStat(this.rune.value.stat) : this.rune.value.stat
+  private calculateGradeValue(rune: Rune): number {
+    if (rune.grade < 6) {
+      const stat = isFlatStat(rune.value.stat) ? flatStatToPercStat(rune.value.stat) : rune.value.stat
       const norm = this.preset.stats.get(stat).normalization
-      if (this.rune.value.value === 1530 && this.rune.set === RuneSet.Energy && this.build === BuildType.Bruiser) {
-        console.log("value: " + valuesForStat.get(this.rune.value.stat)[1])
-      }
-      return (6 - this.rune.grade) * this.rune.slot % 2 === 0 ? valuesForStat.get(stat)[1] * this.preset.stats.get(stat).normalization : (valuesForStat.get(stat)[1] * norm) * 100
+      return (6 - rune.grade) * rune.slot % 2 === 0 ? valuesForStat.get(stat)[1] * this.preset.stats.get(stat).normalization : (valuesForStat.get(stat)[1] * norm) * 100
     } else {
       return 0
     }
@@ -250,33 +223,25 @@ class PresetInstance { // fields that are used in private functions as private f
   }
 
   // why would you got for 3rd best to save mana .Also stat cant be atk+/atk% when slot one so why is that the stat/gem in recommended??
-  private calculateStat(): Stat {
+  private calculateStat(rune: Rune): Stat {
     const value = this.valueForNumber()
     const parsedStat = isFlatStat(value.stat) ? flatStatToPercStat(value.stat) : value.stat
     //const right = (value.value + value.grind) * (isFlatStat(value.stat) ? 100 * this.preset.stats.get(parsedStat).normalization / this.preset.stats.get(parsedStat).avgBase : this.preset.stats.get(parsedStat).normalization)
     const right = (value.value + value.grind) * (isFlatStat(value.stat) ? 100 * this.preset.stats.get(parsedStat).normalization / this.preset.stats.get(parsedStat).avgBase : this.preset.stats.get(parsedStat).normalization)
 
     const filtered = Array.from(this.preset.filterPowerGemGrindByStats([ // TODO this shit doesnt work
-      this.rune.value.stat,
-      this.rune.prefix.isEmpty() ? Stat.EMPTY : this.rune.prefix.stat,
+      rune.value.stat,
+      rune.prefix.isEmpty() ? Stat.EMPTY : rune.prefix.stat,
       value.stat,
       this.subSlotToGem !== 1 ? this.sub1.stat : Stat.EMPTY,
       this.subSlotToGem !== 2 ? this.sub2.stat : Stat.EMPTY,
       this.subSlotToGem !== 3 ? this.sub3.stat : Stat.EMPTY,
       this.subSlotToGem !== 4 ? this.sub4.stat : Stat.EMPTY,
-      this.rune.slot == 1 ? Stat["Def%"] : Stat.EMPTY,
-      this.rune.slot == 1 ? Stat["Def+"] : Stat.EMPTY,
-      this.rune.slot == 3 ? Stat["Atk%"] : Stat.EMPTY,
-      this.rune.slot == 3 ? Stat["Atk+"] : Stat.EMPTY]))
+      rune.slot == 1 ? Stat["Def%"] : Stat.EMPTY,
+      rune.slot == 1 ? Stat["Def+"] : Stat.EMPTY,
+      rune.slot == 3 ? Stat["Atk%"] : Stat.EMPTY,
+      rune.slot == 3 ? Stat["Atk+"] : Stat.EMPTY]))
 
-    if (this.rune.id === 34195767128 && this.build === BuildType["Fast DD"]) {
-      console.log()
-      console.log("normalized value of slot to be gemmed: " + right)
-      console.log("this weird filter: " + (filtered[1] as ValueOfPowerGemGrind).normalizedGemGrind)
-      console.log("this weird filter: " + Stat[(filtered[0] as Stat)])
-      console.log("value: " + value.toGemGrindString())
-      console.log(Stat[parsedStat])
-    }
     if (
       (filtered[1] as ValueOfPowerGemGrind).normalizedGemGrind > right) {
       return (filtered[0] as Stat)
@@ -302,15 +267,15 @@ class PresetInstance { // fields that are used in private functions as private f
     }
   }
 
-  private calculatePotentialSubs(value: Value, subSlot: number): Value {
-    const sub1Stat = value.stat !== Stat.EMPTY ? value.stat : this.statForSubSlot(subSlot)
+  private calculatePotentialSubs(value: Value, subSlot: number, rune: Rune): Value {
+    const sub1Stat = value.stat !== Stat.EMPTY ? value.stat : this.statForSubSlot(subSlot, rune)
     var sub1Value: number;
     if (value.isEmpty()) {
-      sub1Value = this.preset.powerGemGrindValues.get(sub1Stat).powerUp - Math.max(0, 6 - this.rune.grade)
+      sub1Value = this.preset.powerGemGrindValues.get(sub1Stat).powerUp - Math.max(0, 6 - rune.grade)
     } else {
       sub1Value = value.value
-      if (value.value + this.rune.inStatRollLeft > 0) {
-        sub1Value += this.isStatHighestNorm(value.stat) ? this.x1(value.stat) : this.x2(value.stat)
+      if (value.value + rune.inStatRollLeft > 0) {
+        sub1Value += this.isStatHighestNorm(value.stat, rune) ? this.x1(value.stat, rune) : this.x2(value.stat, rune)
       } else {
         sub1Value += 0
       }
@@ -320,18 +285,18 @@ class PresetInstance { // fields that are used in private functions as private f
     return new Value(sub1Stat, sub1Value, value.reapp, sub1Grind)
   }
 
-  private calculateValueForPrefix(): number {
-    if (this.rune.prefix.isEmpty()) return 0
-    if (isFlatStat(this.rune.prefix.stat)) {
-      return this.rune.prefix.value * this.preset.stats.get(flatStatToPercStat(this.rune.prefix.stat)).normalization * 100 / this.preset.stats.get(flatStatToPercStat(this.rune.prefix.stat)).avgBase
+  private calculateValueForPrefix(rune: Rune): number {
+    if (rune.prefix.isEmpty()) return 0
+    if (isFlatStat(rune.prefix.stat)) {
+      return rune.prefix.value * this.preset.stats.get(flatStatToPercStat(rune.prefix.stat)).normalization * 100 / this.preset.stats.get(flatStatToPercStat(rune.prefix.stat)).avgBase
     } else {
-      return this.rune.prefix.value * this.preset.stats.get(this.rune.prefix.stat).normalization
+      return rune.prefix.value * this.preset.stats.get(rune.prefix.stat).normalization
     }
   }
 
-  private statForSubSlot(subSlot: number): Stat {
-    const nThHighestValue = Math.ceil((PROPERTIES.powerUp + 1) / 2)
-    let allowList: Array<Stat> = [this.rune.value.stat, this.rune.prefix.stat, this.rune.sub1.stat, this.rune.sub2.stat, this.rune.sub3.stat, this.rune.sub4.stat] // cell AH?
+  private statForSubSlot(subSlot: number, rune: Rune): Stat {
+    const nThHighestValue = Math.ceil((getProperties().powerUp + 1) / 2)
+    let allowList: Array<Stat> = [rune.value.stat, rune.prefix.stat, rune.sub1.stat, rune.sub2.stat, rune.sub3.stat, rune.sub4.stat] // cell AH?
     switch (subSlot) {
       case 2:
         allowList = allowList.concat([this.sub1.stat]);
@@ -344,8 +309,8 @@ class PresetInstance { // fields that are used in private functions as private f
         break;
     }
 
-    const atk = this.rune.slot === Slot.THREE ? [Stat["Atk%"], Stat["Atk+"]] : []
-    const def = this.rune.slot === Slot.ONE ? [Stat["Def%"], Stat["Def+"]] : []
+    const atk = rune.slot === Slot.THREE ? [Stat["Atk%"], Stat["Atk+"]] : []
+    const def = rune.slot === Slot.ONE ? [Stat["Def%"], Stat["Def+"]] : []
     allowList = allowList.concat(atk, def)
     const normalizedArray = Array.from(this.preset.powerGemGrindValues).filter(([key, value]) => !allowList.some(it => it === key)).sort(([key1, value1], [key2, value2]) => {
       if (value1.normalizedGemGrind < value2.normalizedGemGrind) return 1
@@ -356,19 +321,19 @@ class PresetInstance { // fields that are used in private functions as private f
   }
 
 
-  private x1(stat: Stat) { // TODO: Give good name
-    return this.rune.inStatRollLeft * (1 / this.rune.nrOfStats + (5 - PROPERTIES.powerUp) * (1 - 1 / this.rune.nrOfStats) / 4) * this.preset.powerGemGrindValues.get(stat).powerUp * this.rune.grade / 6
+  private x1(stat: Stat, rune: Rune) { // TODO: Give good name
+    return rune.inStatRollLeft * (1 / rune.nrOfStats + (5 - getProperties().powerUp) * (1 - 1 / rune.nrOfStats) / 4) * this.preset.powerGemGrindValues.get(stat).powerUp * rune.grade / 6
   }
 
-  private x2(stat: Stat) { // TODO: Give good name
-    return this.rune.inStatRollLeft * (1 / this.rune.nrOfStats - (5 - PROPERTIES.powerUp) * (1 / this.rune.nrOfStats) / 4) * this.preset.powerGemGrindValues.get(stat).powerUp * this.rune.grade / 6
+  private x2(stat: Stat, rune: Rune) { // TODO: Give good name
+    return rune.inStatRollLeft * (1 / rune.nrOfStats - (5 - getProperties().powerUp) * (1 / rune.nrOfStats) / 4) * this.preset.powerGemGrindValues.get(stat).powerUp * rune.grade / 6
   }
 
-  private isStatHighestNorm(stat: Stat) {
-    const norm1 = this.rune.sub1.isEmpty ? 0 : this.preset.powerGemGrindValues.get(this.rune.sub1.stat).normalizedPowerUp
-    const norm2 = this.rune.sub2.isEmpty ? 0 : this.preset.powerGemGrindValues.get(this.rune.sub2.stat).normalizedPowerUp
-    const norm3 = this.rune.sub3.isEmpty ? 0 : this.preset.powerGemGrindValues.get(this.rune.sub3.stat).normalizedPowerUp
-    const norm4 = this.rune.sub4.isEmpty ? 0 : this.preset.powerGemGrindValues.get(this.rune.sub4.stat).normalizedPowerUp
+  private isStatHighestNorm(stat: Stat, rune: Rune) {
+    const norm1 = rune.sub1.isEmpty ? 0 : this.preset.powerGemGrindValues.get(rune.sub1.stat).normalizedPowerUp
+    const norm2 = rune.sub2.isEmpty ? 0 : this.preset.powerGemGrindValues.get(rune.sub2.stat).normalizedPowerUp
+    const norm3 = rune.sub3.isEmpty ? 0 : this.preset.powerGemGrindValues.get(rune.sub3.stat).normalizedPowerUp
+    const norm4 = rune.sub4.isEmpty ? 0 : this.preset.powerGemGrindValues.get(rune.sub4.stat).normalizedPowerUp
     return this.preset.powerGemGrindValues.get(stat).normalizedPowerUp === Math.max(norm1, norm2, norm3, norm4)
   }
 
@@ -679,9 +644,9 @@ class ValueOfPowerGemGrind {
       return
     }
     this.avgPowerUp = (minMaxForStat.get(stat)[0] + minMaxForStat.get(stat)[1]) / 2
-    this.powerUp = minMaxForStat.get(stat)[0] + (5 - PROPERTIES.powerUp) / 4 * (minMaxForStat.get(stat)[1] - minMaxForStat.get(stat)[0])
-    this.gem = this.calculateGem(stat, grindGemTable.get(PROPERTIES.gemGrind))
-    this.grind = this.calculateGrind(stat, grindGemTable.get(PROPERTIES.gemGrind))
+    this.powerUp = minMaxForStat.get(stat)[0] + (5 - getProperties().powerUp) / 4 * (minMaxForStat.get(stat)[1] - minMaxForStat.get(stat)[0])
+    this.gem = this.calculateGem(stat, grindGemTable.get(getProperties().gemGrind))
+    this.grind = this.calculateGrind(stat, grindGemTable.get(getProperties().gemGrind))
     this.gemGrind = this.gem + this.grind
   }
 
@@ -755,7 +720,7 @@ class PresetNormalization {
   private calculateNormalize(slot: Slot, stats: Map<Stat, PresetStat>, preferred_slot: Map<Slot, Array<Stat>>, buildType: BuildType) {
     const filter3 = Array.from(stats).filter(([key, value]) => value.avgRollsPerRune >= 3).length
     const filter35 = Array.from(stats).filter(([key, value]) => value.avgRollsPerRune >= 3.5).length
-    const prevalue = 10 * (-1 + filter3 + filter35 + PROPERTIES.Focus.get(buildType))
+    const prevalue = 10 * (-1 + filter3 + filter35 + getProperties().Focus.get(buildType))
     if (slot.valueOf() % 2 === 0) {
       this.normalize.set(slot, prevalue + 10 * statsInSlot.get(slot) / preferred_slot.get(slot).length)
     } else {

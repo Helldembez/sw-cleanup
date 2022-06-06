@@ -17,6 +17,10 @@ import { DetailModule } from './detail/detail.module';
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
+import { RunesModule } from './runes/runes.module';
+import { PresetsModule } from './presets/presets.module';
+import { OptionsModule } from './options/options.module';
+import { getProperties } from './home/values';
 
 // AoT requires an exported function for factories
 const httpLoaderFactory = (http: HttpClient): TranslateHttpLoader =>  new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -31,6 +35,9 @@ const httpLoaderFactory = (http: HttpClient): TranslateHttpLoader =>  new Transl
     SharedModule,
     HomeModule,
     DetailModule,
+    RunesModule,
+    PresetsModule,
+    OptionsModule,
     AppRoutingModule,
     TranslateModule.forRoot({
       loader: {
@@ -43,4 +50,9 @@ const httpLoaderFactory = (http: HttpClient): TranslateHttpLoader =>  new Transl
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule {}
+export class AppModule {
+
+  constructor() {
+    getProperties()
+  }
+}

@@ -4,23 +4,20 @@
   display: none;
 }
 
-table,
-th,
-td {
-  border: 1px solid black;
-  //color: white
+.column {
+  float: left;
+  width: 50%;
+  text-align: left;
 }
 
-.container {
-  background-color: #30302f;
-  width: 100%;
-  bottom: 0;
-
+.row {
+  margin-top: 20px;
+  padding-left: 50px;
 }
 
-body {
-  background-color: #30302f !important;
-  
-  width: 100%;
-  bottom: 0;
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
 }
