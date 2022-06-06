@@ -50,6 +50,12 @@ enum MonsterType {
     All
 }
 
+enum Action {
+    KEEP,
+    SELL,
+    POWERUP
+}
+
 const valuesForStat: Map<Stat, Array<number>> = new Map([
     [Stat["Acc%"], [64, -13]],
     [Stat["Atk+"], [160, -25]],
@@ -214,4 +220,4 @@ const grindGemTable: Map<Number, number> = new Map([
     [1, 1]
 ])
 
-export { valuesForStat, minMaxForStat, maxRollsForStat, flatStatsForStat, avgBaseForStatPerType, minMaxForGrind, minMaxForGem, grindGemTable, statsInSlot, allStats, Stat, RuneSet, Slot, MonsterType }
+export { valuesForStat, minMaxForStat, maxRollsForStat, flatStatsForStat, avgBaseForStatPerType, minMaxForGrind, minMaxForGem, grindGemTable, statsInSlot, allStats, Stat, RuneSet, Slot, MonsterType, Action }

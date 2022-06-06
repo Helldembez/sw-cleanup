@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Rune, RuneSet, Stat, presets, Preset, BuildType } from "./models"
-import { Slot } from "./values"
+import { Action, Slot } from "./values"
 
 const fs = window.require('fs')
 
@@ -15,6 +15,7 @@ export class HomeComponent implements OnInit {
   public Stat = Stat
   public Slot = Slot
   public BuildType = BuildType
+  public Action = Action
   fileLocation = ""
   file: File
   runes: Array<Rune>
@@ -45,14 +46,15 @@ export class HomeComponent implements OnInit {
       var data = fs.readFileSync(this.fileLocation).toString()
       var profile = JSON.parse(data)
       var count = 0
-      this.runes = profile.runes.map((r: any) => {
-        if (count < 10) {
-          count++
-          return new Rune(r)
-        } else {
-          return undefined
-        }
-      }).filter(it => it != undefined)
+      this.runes = profile.runes.map((r: any) => new Rune(r))
+      // this.runes = profile.runes.map((r: any) => {
+      //   if (count < 999) {
+      //     count++
+      //     return new Rune(r)
+      //   } else {
+      //     return undefined
+      //   }
+      // }).filter(it => it != undefined)
     //}
   }
 
