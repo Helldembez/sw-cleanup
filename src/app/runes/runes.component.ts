@@ -10,7 +10,7 @@ import { ImporterService } from '../importer.service';
 })
 export class RunesComponent implements OnInit {
   private importService: ImporterService
-  private runes: Array<Rune>
+  runes: Array<Rune>
 
   public RuneSet = RuneSet
   public Stat = Stat

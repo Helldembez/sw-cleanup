@@ -120,11 +120,11 @@ class Value {
 
 class PresetInstance { // fields that are used in private functions as private field instead of param?
   private preset: Preset
-  private sub1: Value
-  private sub2: Value
-  private sub3: Value
-  private sub4: Value
-  private subSlotToGem: number
+  sub1: Value
+  sub2: Value
+  sub3: Value
+  sub4: Value
+  subSlotToGem: number
   private gemValue: number
   private grindValue: number
   private stat: Stat
