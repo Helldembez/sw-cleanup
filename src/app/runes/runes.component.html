@@ -6,57 +6,73 @@
         <li id="KEEP">Keep</li>
     </ul>
 
-    <table class="table table-striped  table-bordered">
-        <thead>
-            <th sortable="set" (sort)="onSort($event)">Set</th>
-            <th sortable="slot" (sort)="onSort($event)">Slot</th>
-            <th sortable="level" (sort)="onSort($event)">Level</th>
-            <th sortable="stat" (sort)="onSort($event)">Stat</th>
-            <th>Prefix</th>
-            <th>Substat 1</th>
-            <th>Substat 2</th>
-            <th>Substat 3</th>
-            <th>Substat 4</th>
-            <th sortable="action" (sort)="onSort($event)">Action</th>
-            <th scope="col" sortable="value" (sort)="onSort($event)">Potential Value</th>
-            <th sortable="build" (sort)="onSort($event)">Build Type</th>
-            <th colspan="4">Statistical assumption of what rune will roll/gem/grind into</th>
-            <th>Sub to gem</th>
-        </thead>
-        <tbody>
-            <tr *ngFor="let rune of runes">
-                <td>{{rune.set}}</td>
-                <td>{{rune.slot}}</td>
-                <td>{{rune.level}}</td>
-                <td>{{rune.mainstat}}</td>
-                <td>{{rune.prefix}}</td>
-                <td>{{rune.sub1}}</td>
-                <td>{{rune.sub2}}</td>
-                <td>{{rune.sub3}}</td>
-                <td>{{rune.sub4}}</td>
-                <td
-                    [ngClass]="{'sell': rune.action === 'SELL', 'keep': rune.action === 'KEEP', 'powerup': rune.action === 'POWERUP'}">
-                    {{rune.action}}</td>
-                <td>{{rune.value | number}}</td>
-                <td>{{rune.build}}</td>
-                <td>{{rune.bestSub1}}</td>
-                <td>{{rune.bestSub2}}</td>
-                <td>{{rune.bestSub3}}</td>
-                <td>{{rune.bestSub4}}</td>
-                <td>{{rune.slotToGem}}</td>
-            </tr>
-        </tbody>
-    </table>
+    <form>
+        <div class="mb-3 row">
+            <label for="table-complete-search" class="col-xs-3 col-sm-auto col-form-label">Full text search:</label>
+            <div class="col-xs-3 col-sm-auto">
+                <input id="table-complete-search" type="text" class="form-control" name="searchTerm"
+                    [(ngModel)]="service.searchTerm">
+            </div>
+            <span class="col col-form-label" *ngIf="service.loading$ | async">Loading...</span>
+        </div>
 
-    <div class="d-flex justify-content-between p-2">
-        <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize"
-            (pageChange)="refreshRuneView()" [rotate]="true" [ellipses]="false" [boundaryLinks]="true" [maxSize]="5">
-        </ngb-pagination>
+        <table class="table table-striped  table-bordered">
+            <thead>
+                <th sortable="set" (sort)="onSort($event)">Set</th>
+                <th sortable="slot" (sort)="onSort($event)">Slot</th>
+                <th sortable="level" (sort)="onSort($event)">Level</th>
+                <th sortable="stat" (sort)="onSort($event)">Stat</th>
+                <th>Prefix</th>
+                <th>Substat 1</th>
+                <th>Substat 2</th>
+                <th>Substat 3</th>
+                <th>Substat 4</th>
+                <th sortable="action" (sort)="onSort($event)">Action</th>
+                <th scope="col" sortable="value" (sort)="onSort($event)">Potential Value</th>
+                <th sortable="build" (sort)="onSort($event)">Build Type</th>
+                <th colspan="4">Statistical assumption of what rune will roll/gem/grind into</th>
+                <th>Sub to gem</th>
+            </thead>
+            <tbody>
+                <tr *ngFor="let rune of runes$ | async">
+                    <td>
+                        <ngb-highlight [result]="rune.set" [term]="service.searchTerm"></ngb-highlight>
+                    </td>
+                    <td>{{rune.slot}}</td>
+                    <td>{{rune.level}}</td>
+                    <td>{{rune.mainstat}}</td>
+                    <td>{{rune.prefix}}</td>
+                    <td>{{rune.sub1}}</td>
+                    <td>{{rune.sub2}}</td>
+                    <td>{{rune.sub3}}</td>
+                    <td>{{rune.sub4}}</td>
+                    <td
+                        [ngClass]="{'sell': rune.action === 'SELL', 'keep': rune.action === 'KEEP', 'powerup': rune.action === 'POWERUP'}">
+                        <ngb-highlight [result]="rune.action" [term]="service.searchTerm"></ngb-highlight>
+                    </td>
+                    <td>{{rune.value | number}}</td>
+                    <td>
+                        <ngb-highlight [result]="rune.build" [term]="service.searchTerm"></ngb-highlight>
+                    </td>
+                    <td>{{rune.bestSub1}}</td>
+                    <td>{{rune.bestSub2}}</td>
+                    <td>{{rune.bestSub3}}</td>
+                    <td>{{rune.bestSub4}}</td>
+                    <td>{{rune.slotToGem}}</td>
+                </tr>
+            </tbody>
+        </table>
 
-        <select class="form-select" style="width: auto" [(ngModel)]="pageSize" (ngModelChange)="refreshRuneView()">
-            <option [ngValue]="20">20 items per page</option>
-            <option [ngValue]="40">40 items per page</option>
-            <option [ngValue]="60">60 items per page</option>
-        </select>
-    </div>
+        <div class="d-flex justify-content-between p-2">
+            <ngb-pagination [collectionSize]="(total$ | async)!" [(page)]="service.page" [pageSize]="service.pageSize"
+                [rotate]="true" [ellipses]="false" [boundaryLinks]="true" [maxSize]="5">
+            </ngb-pagination>
+
+            <select class="form-select" style="width: auto" name="pageSize" [(ngModel)]="service.pageSize">
+                <option [ngValue]="20">20 items per page</option>
+                <option [ngValue]="40">40 items per page</option>
+                <option [ngValue]="60">60 items per page</option>
+            </select>
+        </div>
+    </form>
 </div>
