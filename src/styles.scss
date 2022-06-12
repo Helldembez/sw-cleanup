@@ -1,9 +1,15 @@
 @import "~bootstrap/scss/bootstrap";
+.sw-container {
+  padding-top:75px;
+  padding-left: 25px;
+  padding-right: 25px;
+}
 
 body {
   // background-color: #30302f;
   margin: 0px;
   padding: 0px;
+  padding-right: 25px;
   text-align: center;
   // color: white;
 }
