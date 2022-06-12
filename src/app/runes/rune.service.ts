@@ -17,7 +17,12 @@ interface SearchResult {
 interface State {
     page: number;
     pageSize: number;
-    searchTerm: string;
+    build: string;
+    set: string;
+    action: string;
+    slot: number;
+    level: number;
+    mainstat: string;
     sortColumn: SortColumn;
     sortDirection: SortDirection;
 }
@@ -35,11 +40,23 @@ function sort(runes: RuneView[], column: SortColumn, direction: string): RuneVie
     }
 }
 
-function matches(rune: RuneView, term: string, pipe: PipeTransform) {
-    return rune.set.toLowerCase().includes(term.toLowerCase())
-        || rune.action.toLowerCase().includes(term.toLowerCase())
-        || rune.build.toLowerCase().includes(term.toLowerCase());
-        //|| pipe.transform(rune.build).includes(term);
+function cmp_str(a: string, b: string) {
+    return (b.length > 0 && a !== b)
+}
+
+function cmp_num(a: number, b: number, match: boolean) {
+    return match ? (b > 0 && a != b) : (b > 0 && a < b)
+}
+
+function matches(rune: RuneView, state: State, pipe: PipeTransform) {
+    return (
+        cmp_str(rune.build, state.build) ||
+        cmp_str(rune.set, state.set) ||
+        cmp_str(rune.action, state.action) ||
+        cmp_str(rune.mainstat.split(' ')[1], state.mainstat) ||
+        cmp_num(rune.slot, state.slot, true) ||
+        cmp_num(rune.level, state.level, false)
+    ) ? false : true
 }
 
 @Injectable({ providedIn: 'root' })
@@ -53,7 +70,12 @@ export class RuneService {
     private _state: State = {
         page: 1,
         pageSize: 20,
-        searchTerm: '',
+        build: '',
+        set: '',
+        action: '',
+        slot: 0,
+        level: 0,
+        mainstat: '',
         sortColumn: '',
         sortDirection: ''
     };
@@ -80,11 +102,21 @@ export class RuneService {
     get loading$() { return this._loading$.asObservable(); }
     get page() { return this._state.page; }
     get pageSize() { return this._state.pageSize; }
-    get searchTerm() { return this._state.searchTerm; }
+    get build() { return this._state.build; }
+    get set() { return this._state.set; }
+    get action() { return this._state.action; }
+    get slot() { return this._state.slot; }
+    get level() { return this._state.level; }
+    get mainstat() { return this._state.mainstat; }
 
     set page(page: number) { this._set({ page }); }
     set pageSize(pageSize: number) { this._set({ pageSize }); }
-    set searchTerm(searchTerm: string) { this._set({ searchTerm }); }
+    set build(build: string) { this._set({ build }); }
+    set set(set: string) { this._set({ set }); }
+    set action(action: string) { this._set({ action }); }
+    set slot(slot: number) { this._set({ slot }); }
+    set level(level: number) { this._set({ level }); }
+    set mainstat(mainstat: string) { this._set({ mainstat }); }
     set sortColumn(sortColumn: SortColumn) { this._set({ sortColumn }); }
     set sortDirection(sortDirection: SortDirection) { this._set({ sortDirection }); }
 
@@ -94,17 +126,25 @@ export class RuneService {
     }
 
     private _search(): Observable<SearchResult> {
-        const { sortColumn, sortDirection, pageSize, page, searchTerm } = this._state;
+        const { sortColumn, sortDirection, pageSize, page } = this._state;
 
-        // 1. sort
         let runes = sort(this.originalRunes, sortColumn, sortDirection);
 
-        // 2. filter
-        runes = runes.filter(country => matches(country, searchTerm, this.pipe));
+        runes = runes.filter(country => matches(country, this._state, this.pipe));
+
         const total = runes.length;
 
-        // 3. paginate
         runes = runes.slice((page - 1) * pageSize, (page - 1) * pageSize + pageSize);
         return of({ runes, total });
+    }
+
+    clear() {
+        this._state.action = ''
+        this._state.build = ''
+        this._state.set = ''
+        this._state.slot = 0
+        this._state.level = 0
+        this._state.mainstat = ''
+        this._search$.next();
     }
 }

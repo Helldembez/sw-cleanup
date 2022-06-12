@@ -1,20 +1,63 @@
 <div class="sw-container">
-    <label>Action:</label>
-    <ul>
-        <li id="KEEP">Keep</li>
-        <li id="SELL">Sell</li>
-        <li id="KEEP">Keep</li>
-    </ul>
-
     <form>
         <div class="mb-3 row">
-            <label for="table-complete-search" class="col-xs-3 col-sm-auto col-form-label">Full text search:</label>
+            <label for="table-set-search" class="col-xs-3 col-sm-auto col-form-label">Set:</label>
             <div class="col-xs-3 col-sm-auto">
-                <input id="table-complete-search" type="text" class="form-control" name="searchTerm"
-                    [(ngModel)]="service.searchTerm">
+                <select id="table-set-search" class="form-select" name="set" [(ngModel)]="service.set"
+                    style="width: auto">
+                    <option value="">None</option>
+                    <option *ngFor="let set of RuneSet()" value="{{set}}">{{ set }}</option>
+                </select>
+            </div>
+            <label for="table-slot-search" class="col-xs-3 col-sm-auto col-form-label">Slot:</label>
+            <div class="col-xs-3 col-sm-auto">
+                <select id="table-slot-search" class="form-select" name="slot" [(ngModel)]="service.slot"
+                    style="width: auto">
+                    <option value="0">None</option>
+                    <option *ngFor="let slot of [1,2,3,4,5,6]" value="{{slot}}">{{ slot }}</option>
+                </select>
+            </div>
+            <label for="table-level-search" class="col-xs-3 col-sm-auto col-form-label">Level:</label>
+            <div class="col-xs-3 col-sm-auto">
+                <select id="table-level-search" class="form-select" name="level" [(ngModel)]="service.level"
+                    style="width: auto">
+                    <option value="0">None</option>
+                    <option *ngFor="let level of [3,6,9,12,15]" value="{{level}}">{{ level }}</option>
+                </select>
+            </div>
+            <label for="table-mainstat-search" class="col-xs-3 col-sm-auto col-form-label">Main stat:</label>
+            <div class="col-xs-3 col-sm-auto">
+                <select id="table-mainstat-search" class="form-select" name="mainstat" [(ngModel)]="service.mainstat"
+                    style="width: auto">
+                    <option value="">None</option>
+                    <option *ngFor="let stat of Stat()" value="{{stat}}">{{ stat }}</option>
+                </select>
+            </div>
+            <label for="table-action-search" class="col-xs-3 col-sm-auto col-form-label">Action:</label>
+            <div class="col-xs-3 col-sm-auto">
+                <select id="table-action-search" class="form-select" name="action" [(ngModel)]="service.action"
+                    style="width: auto">
+                    <option value="">None</option>
+                    <option value="KEEP">Keep</option>
+                    <option value="SELL">Sell</option>
+                    <option value="POWERUP">Power up</option>
+                </select>
+            </div>
+            <label for="table-build-search" class="col-xs-3 col-sm-auto col-form-label">Build:</label>
+            <div class="col-xs-3 col-sm-auto">
+                <select id="table-build-search" class="form-select" name="build" [(ngModel)]="service.build"
+                    style="width: auto">
+                    <option value="">None</option>
+                    <option *ngFor="let build of BuildType()" value="{{build}}">{{ build }}</option>
+                </select>
+            </div>
+            <div class="col-xs-3 col-sm-auto">
+                <button type="button" class="btn btn-danger" (click)="clear()">Clear</button>
             </div>
             <span class="col col-form-label" *ngIf="service.loading$ | async">Loading...</span>
         </div>
+
+
 
         <table class="table table-striped  table-bordered">
             <thead>
@@ -36,11 +79,17 @@
             <tbody>
                 <tr *ngFor="let rune of runes$ | async">
                     <td>
-                        <ngb-highlight [result]="rune.set" [term]="service.searchTerm"></ngb-highlight>
+                        <ngb-highlight [result]="rune.set" [term]="service.set"></ngb-highlight>
                     </td>
-                    <td>{{rune.slot}}</td>
-                    <td>{{rune.level}}</td>
-                    <td>{{rune.mainstat}}</td>
+                    <td>
+                        <ngb-highlight [result]="rune.slot | number" [term]="service.slot"></ngb-highlight>
+                    </td>
+                    <td>
+                        <ngb-highlight [result]="rune.level | number" [term]="service.level"></ngb-highlight>
+                    </td>
+                    <td>
+                        <ngb-highlight [result]="rune.mainstat" [term]="service.mainstat"></ngb-highlight>
+                    </td>
                     <td>{{rune.prefix}}</td>
                     <td>{{rune.sub1}}</td>
                     <td>{{rune.sub2}}</td>
@@ -48,11 +97,11 @@
                     <td>{{rune.sub4}}</td>
                     <td
                         [ngClass]="{'sell': rune.action === 'SELL', 'keep': rune.action === 'KEEP', 'powerup': rune.action === 'POWERUP'}">
-                        <ngb-highlight [result]="rune.action" [term]="service.searchTerm"></ngb-highlight>
+                        <ngb-highlight [result]="rune.action" [term]="service.action"></ngb-highlight>
                     </td>
                     <td>{{rune.value | number}}</td>
                     <td>
-                        <ngb-highlight [result]="rune.build" [term]="service.searchTerm"></ngb-highlight>
+                        <ngb-highlight [result]="rune.build" [term]="service.build"></ngb-highlight>
                     </td>
                     <td>{{rune.bestSub1}}</td>
                     <td>{{rune.bestSub2}}</td>
