@@ -19,7 +19,7 @@ import { FooterComponent } from './footer/footer.component';
 import { RunesModule } from './runes/runes.module';
 import { PresetsModule } from './presets/presets.module';
 import { OptionsModule } from './options/options.module';
-import { getProperties } from './home/values';
+import { getProperties } from './global/functions';
 
 // AoT requires an exported function for factories
 const httpLoaderFactory = (http: HttpClient): TranslateHttpLoader =>  new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -52,5 +52,6 @@ export class AppModule {
 
   constructor() {
     getProperties()
+    //getPresets()
   }
 }

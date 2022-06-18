@@ -5,9 +5,11 @@ import { PresetsRoutingModule } from './presets-routing.module';
 
 import { PresetsComponent } from './presets.component';
 import { SharedModule } from '../shared/shared.module';
+import { PresetComponent } from './preset.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
-  declarations: [PresetsComponent],
-  imports: [CommonModule, SharedModule, PresetsRoutingModule]
+  declarations: [PresetsComponent, PresetComponent],
+  imports: [CommonModule, SharedModule, PresetsRoutingModule, FormsModule, ReactiveFormsModule]
 })
 export class PresetsModule {}

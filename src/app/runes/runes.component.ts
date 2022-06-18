@@ -1,8 +1,8 @@
 import { DecimalPipe } from '@angular/common';
 import { Component, QueryList, ViewChildren } from '@angular/core';
 import { Observable } from 'rxjs';
-import { BuildType } from '../home/models';
-import { RuneSet, Stat } from '../home/values';
+import { RuneSet, Stat, BuildType } from '../global/models';
+import { RuneView } from './models/rune-view';
 import { RuneService } from './rune.service';
 import { NgbdSortableHeader, SortEvent } from './sortable.directive';
 
@@ -50,27 +50,5 @@ export class RunesComponent {
   clear() {
     this.service.clear()
   }
-
-
-
 }
 
-export class RuneView {
-  set: string
-  slot: number
-  level: number
-  mainstat: string
-  prefix: string
-  sub1: string
-  sub2: string
-  sub3: string
-  sub4: string
-  action: string
-  value: number
-  build: string
-  bestSub1: string
-  bestSub2: string
-  bestSub3: string
-  bestSub4: string
-  slotToGem: number
-}

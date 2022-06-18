@@ -1,0 +1,57 @@
+<div *ngIf="preset" class="container">
+    <br />
+    <form [formGroup]="presetForm" (ngSubmit)="submit()">
+        <div class="mb-3 row">
+            <div class="col-xs-3 col-sm-auto">
+                <label>HP</label>
+                <input class="form-number-input" type="number" formControlName="hp">
+            </div>
+        </div>
+        <div class="mb-3 row">
+            <div class="col-xs-3 col-sm-auto">
+                <label>Atk</label>
+                <input class="form-number-input" type="number" formControlName="atk">
+            </div>
+        </div>
+        <div class="mb-3 row">
+            <div class="col-xs-3 col-sm-auto">
+                <label>Def</label>
+                <input class="form-number-input" type="number" formControlName="def">
+            </div>
+        </div>
+        <div class="mb-3 row">
+            <div class="col-xs-3 col-sm-auto">
+                <label>Spd</label>
+                <input class="form-number-input" type="number" formControlName="spd">
+            </div>
+        </div>
+        <div class="mb-3 row">
+            <div class="col-xs-3 col-sm-auto">
+                <label>Acc</label>
+                <input class="form-number-input" type="number" formControlName="acc">
+            </div>
+        </div>
+        <div class="mb-3 row">
+            <div class="col-xs-3 col-sm-auto">
+                <label>Res</label>
+                <input class="form-number-input" type="number" formControlName="res">
+            </div>
+        </div>
+        <div class="mb-3 row">
+            <div class="col-xs-3 col-sm-auto">
+                <label>Crit rate</label>
+                <input class="form-number-input" type="number" formControlName="ctr">
+            </div>
+        </div>
+        <div class="mb-3 row">
+            <div class="col-xs-3 col-sm-auto">
+                <label>Crit damage</label>
+                <input class="form-number-input" type="number" formControlName="ctd">
+            </div>
+        </div>
+
+
+        <button class="btn btn-dark" type="submit">Save</button>
+
+    </form>
+</div>

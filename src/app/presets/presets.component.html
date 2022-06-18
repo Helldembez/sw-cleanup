@@ -1,1 +1,9 @@
-<p>presets works!</p>
+<div class="sw-container container">
+
+    <select id="table-set-search" class="form-select" name="set" [(ngModel)]="buildType" style="width: auto">
+        <option value="">None</option>
+        <option *ngFor="let build of BuildType()" value="{{build}}">{{ build }}</option>
+    </select>
+    <app-preset preset="{{buildType}}"></app-preset>
+
+</div>

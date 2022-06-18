@@ -44,6 +44,7 @@
     "@ng-bootstrap/ng-bootstrap": "12.1.2",
     "@popperjs/core": "2.11.5",
     "rxjs": "7.5.5",
+    "select2": "4.0.13",
     "tslib": "^2.1.0",
     "zone.js": "~0.11.5"
   },
