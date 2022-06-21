@@ -2,7 +2,7 @@ import { ROUND, isFlatStat, flatStatToPercStat, getProperties } from "../../glob
 import { valuesForStat } from "../../global/mapping"
 import { Stat, BuildType, Slot } from "../../global/models"
 import { Rune } from "../../runes/models/rune"
-import { Preset } from "./preset"
+import { containsStatInEvenSlots, filterPowerGemGrindByStats, normalizedValueOfSlot, Preset } from "./preset"
 import { Value } from "./value"
 import { ValueOfPowerGemGrind } from "./value-power-gem-grind"
 
@@ -26,7 +26,7 @@ class PresetInstance {
   }
 
   calculatePotentialValue(rune: Rune) {
-    if (rune.slot % 2 === 0 && !this.preset.containsStatInEvenSlots(rune.value.stat)) {
+    if (rune.slot % 2 === 0 && !containsStatInEvenSlots(this.preset.preferred_slot, this.preset.acceptable_slot, rune.value.stat)) {
       this.potential = 0
     } else {
       this.sub1 = this.calculatePotentialSubs(rune.sub1, 1, rune)
@@ -46,7 +46,7 @@ class PresetInstance {
       }
 
 
-      let potential = (this.preset.normalizedValueOfSlot(rune.slot) + this.calculateValueForPrefix(rune) + this.calculatePotentialForSubs() + this.calculateGradeValue(rune))
+      let potential = (normalizedValueOfSlot(this.preset.normalize, rune.slot) + this.calculateValueForPrefix(rune) + this.calculatePotentialForSubs() + this.calculateGradeValue(rune))
       potential *= this.scalemainstatorsomeshit(rune)
       potential *= this.scaleToSet(rune)
       potential *= this.preset.normalize.multiplyFactor.get(rune.slot)
@@ -115,10 +115,9 @@ class PresetInstance {
   private calculateStat(rune: Rune): Stat {
     const value = this.valueForNumber()
     const parsedStat = isFlatStat(value.stat) ? flatStatToPercStat(value.stat) : value.stat
-    //const right = (value.value + value.grind) * (isFlatStat(value.stat) ? 100 * this.preset.stats.get(parsedStat).normalization / this.preset.stats.get(parsedStat).avgBase : this.preset.stats.get(parsedStat).normalization)
     const right = (value.value + value.grind) * (isFlatStat(value.stat) ? 100 * this.preset.stats.get(parsedStat).normalization / this.preset.stats.get(parsedStat).avgBase : this.preset.stats.get(parsedStat).normalization)
 
-    const filtered = Array.from(this.preset.filterPowerGemGrindByStats([ // TODO this shit doesnt work
+    const filtered = Array.from(filterPowerGemGrindByStats(this.preset.powerGemGrindValues, [ // TODO this shit doesnt work
       rune.value.stat,
       rune.prefix.isEmpty() ? Stat.EMPTY : rune.prefix.stat,
       value.stat,

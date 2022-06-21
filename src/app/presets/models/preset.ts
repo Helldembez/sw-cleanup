@@ -121,21 +121,23 @@ class Preset {
     })
   }
 
-  containsStatInEvenSlots(stat: Stat): boolean {
-    return Array.from(this.preferred_slot).some(([key, value]) => value.some(pstat => pstat === stat)) || Array.from(this.acceptable_slot).some(([key, value]) => value.some(astat => astat === stat))
-  }
-
-  normalizedValueOfSlot(slot: Slot): number {
-    return this.normalize.normalize.get(slot)
-  }
-
-  filterPowerGemGrindByStats(stats: Array<Stat>): [Stat, ValueOfPowerGemGrind] {
-    return Array.from(this.powerGemGrindValues).filter(([key, value]) => !stats.includes(key)).sort((a, b) => {
-      if (a[1].normalizedGemGrind < b[1].normalizedGemGrind) return 1
-      if (a[1].normalizedGemGrind > b[1].normalizedGemGrind) return -1
-      return 0
-    })[0]
-  }
+  
 }
 
-export { Preset }
+function filterPowerGemGrindByStats(powerGemGrindValues: Map<Stat, ValueOfPowerGemGrind>, stats: Array<Stat>): [Stat, ValueOfPowerGemGrind] {
+  return Array.from(powerGemGrindValues).filter(([key, value]) => !stats.includes(key)).sort((a, b) => {
+    if (a[1].normalizedGemGrind < b[1].normalizedGemGrind) return 1
+    if (a[1].normalizedGemGrind > b[1].normalizedGemGrind) return -1
+    return 0
+  })[0]
+}
+
+function containsStatInEvenSlots(preferred_slot: Map<Slot, Array<Stat>>, acceptable_slot: Map<Slot, Array<Stat>>, stat: Stat): boolean {
+  return Array.from(preferred_slot).some(([key, value]) => value.some(pstat => pstat === stat)) || Array.from(acceptable_slot).some(([key, value]) => value.some(astat => astat === stat))
+}
+
+function normalizedValueOfSlot(normalize: PresetNormalization, slot: Slot): number {
+  return normalize.normalize.get(slot)
+}
+
+export { Preset, filterPowerGemGrindByStats, containsStatInEvenSlots, normalizedValueOfSlot }

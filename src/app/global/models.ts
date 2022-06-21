@@ -88,6 +88,16 @@ class PrimaryStat {
     amountOfTrue(): number {
         return Number(this.ATK) + Number(this.HP) + Number(this.DEF)
     }
+
+    
+}
+
+function asStringList(primary_stat: PrimaryStat): Array<string>{
+    let a = []
+    if (primary_stat.ATK) a.push("Atk")
+    if (primary_stat.DEF) a.push("Def")
+    if (primary_stat.HP) a.push("Hp")
+    return a
 }
 
 class StatPriority {
@@ -125,4 +135,4 @@ class Properties {
     includeEquiped = true
 }
 
-export { RuneSet, Stat, Action, Slot, MonsterType, Properties, PrimaryStat, StatPriority, BuildType }
+export { RuneSet, Stat, Action, Slot, MonsterType, Properties, PrimaryStat, StatPriority, BuildType, asStringList }

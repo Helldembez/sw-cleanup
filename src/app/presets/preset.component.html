@@ -1,55 +1,236 @@
-<div *ngIf="preset" class="container">
+<div *ngIf="preset">
     <br />
+    <h1>{{preset}}</h1>
     <form [formGroup]="presetForm" (ngSubmit)="submit()">
-        <div class="mb-3 row">
-            <div class="col-xs-3 col-sm-auto">
-                <label>HP</label>
-                <input class="form-number-input" type="number" formControlName="hp">
+        <div class="row">
+            <div class="col">
+                <label>Preferred Set</label>
+                <ng-select [multiple]="true" formControlName="preferred_set">
+                    <ng-option *ngFor="let set of RuneSet()" [value]="set">{{set}}</ng-option>
+                </ng-select>
+            </div>
+            <div class="col">
+                <label>Acceptable Set</label>
+                <ng-select [multiple]="true" formControlName="acceptable_set">
+                    <ng-option *ngFor="let set of RuneSet()" [value]="set">{{set}}</ng-option>
+                </ng-select>
             </div>
         </div>
-        <div class="mb-3 row">
-            <div class="col-xs-3 col-sm-auto">
-                <label>Atk</label>
-                <input class="form-number-input" type="number" formControlName="atk">
+        <hr />
+        <h5>Preferred Slots:</h5>
+        <div class="row">
+            <div class="col">
+                <label>Slot 2</label>
+                <ng-select formControlName="preferredSlot2_1" placeholder="Empty">
+                    <ng-option *ngFor="let stat of stats2" [value]="stat">{{stat}}</ng-option>
+                </ng-select>
             </div>
-        </div>
-        <div class="mb-3 row">
-            <div class="col-xs-3 col-sm-auto">
-                <label>Def</label>
-                <input class="form-number-input" type="number" formControlName="def">
+            <div class="col">
+                <label>Slot 4</label>
+                <ng-select formControlName="preferredSlot4_1" placeholder="Empty">
+                    <ng-option *ngFor="let stat of stats4" [value]="stat">{{stat}}</ng-option>
+                </ng-select>
             </div>
-        </div>
-        <div class="mb-3 row">
-            <div class="col-xs-3 col-sm-auto">
-                <label>Spd</label>
-                <input class="form-number-input" type="number" formControlName="spd">
-            </div>
-        </div>
-        <div class="mb-3 row">
-            <div class="col-xs-3 col-sm-auto">
-                <label>Acc</label>
-                <input class="form-number-input" type="number" formControlName="acc">
-            </div>
-        </div>
-        <div class="mb-3 row">
-            <div class="col-xs-3 col-sm-auto">
-                <label>Res</label>
-                <input class="form-number-input" type="number" formControlName="res">
-            </div>
-        </div>
-        <div class="mb-3 row">
-            <div class="col-xs-3 col-sm-auto">
-                <label>Crit rate</label>
-                <input class="form-number-input" type="number" formControlName="ctr">
-            </div>
-        </div>
-        <div class="mb-3 row">
-            <div class="col-xs-3 col-sm-auto">
-                <label>Crit damage</label>
-                <input class="form-number-input" type="number" formControlName="ctd">
+            <div class="col">
+                <label>Slot 6</label>
+                <ng-select formControlName="preferredSlot6_1" placeholder="Empty">
+                    <ng-option *ngFor="let stat of stats6" [value]="stat">{{stat}}</ng-option>
+                </ng-select>
             </div>
         </div>
 
+        <div class="row">
+            <div class="col">
+                <ng-select formControlName="preferredSlot2_2" placeholder="Empty">
+                    <ng-option *ngFor="let stat of stats2" [value]="stat">{{stat}}</ng-option>
+                </ng-select>
+            </div>
+            <div class="col">
+                <ng-select formControlName="preferredSlot4_2" placeholder="Empty">
+                    <ng-option *ngFor="let stat of stats4" [value]="stat">{{stat}}</ng-option>
+                </ng-select>
+            </div>
+            <div class="col">
+                <ng-select formControlName="preferredSlot6_2" placeholder="Empty">
+                    <ng-option *ngFor="let stat of stats6" [value]="stat">{{stat}}</ng-option>
+                </ng-select>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <ng-select formControlName="preferredSlot2_3" placeholder="Empty">
+                    <ng-option *ngFor="let stat of stats2" [value]="stat">{{stat}}</ng-option>
+                </ng-select>
+            </div>
+            <div class="col">
+                <ng-select formControlName="preferredSlot4_3" placeholder="Empty">
+                    <ng-option *ngFor="let stat of stats4" [value]="stat">{{stat}}</ng-option>
+                </ng-select>
+            </div>
+            <div class="col">
+                <ng-select formControlName="preferredSlot6_3" placeholder="Empty">
+                    <ng-option *ngFor="let stat of stats6" [value]="stat">{{stat}}</ng-option>
+                </ng-select>
+            </div>
+        </div>
+        <hr />
+        <h5>Acceptable Slots:</h5>
+        <div class="row">
+            <div class="col">
+                <label>Slot 2</label>
+                <ng-select formControlName="acceptableSlot2_1" placeholder="Empty">
+                    <ng-option *ngFor="let stat of stats2" [value]="stat">{{stat}}</ng-option>
+                </ng-select>
+            </div>
+            <div class="col">
+                <label>Slot 4</label>
+                <ng-select formControlName="acceptableSlot4_1" placeholder="Empty">
+                    <ng-option *ngFor="let stat of stats4" [value]="stat">{{stat}}</ng-option>
+                </ng-select>
+            </div>
+            <div class="col">
+                <label>Slot 6</label>
+                <ng-select formControlName="acceptableSlot6_1" placeholder="Empty">
+                    <ng-option *ngFor="let stat of stats6" [value]="stat">{{stat}}</ng-option>
+                </ng-select>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <ng-select formControlName="acceptableSlot2_2" placeholder="Empty">
+                    <ng-option *ngFor="let stat of stats2" [value]="stat">{{stat}}</ng-option>
+                </ng-select>
+            </div>
+            <div class="col">
+                <ng-select formControlName="acceptableSlot4_2" placeholder="Empty">
+                    <ng-option *ngFor="let stat of stats4" [value]="stat">{{stat}}</ng-option>
+                </ng-select>
+            </div>
+            <div class="col">
+                <ng-select formControlName="acceptableSlot6_2" placeholder="Empty">
+                    <ng-option *ngFor="let stat of stats6" [value]="stat">{{stat}}</ng-option>
+                </ng-select>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <ng-select formControlName="acceptableSlot2_3" placeholder="Empty">
+                    <ng-option *ngFor="let stat of stats2" [value]="stat">{{stat}}</ng-option>
+                </ng-select>
+            </div>
+            <div class="col">
+                <ng-select formControlName="acceptableSlot4_3" placeholder="Empty">
+                    <ng-option *ngFor="let stat of stats4" [value]="stat">{{stat}}</ng-option>
+                </ng-select>
+            </div>
+            <div class="col">
+                <ng-select formControlName="acceptableSlot6_3" placeholder="Empty">
+                    <ng-option *ngFor="let stat of stats6" [value]="stat">{{stat}}</ng-option>
+                </ng-select>
+            </div>
+        </div>
+
+        <hr />
+        <h5>Stats</h5>
+        <div class="row">
+            <div class="col">
+                <label for="hp">HP</label>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="nr">#</span>
+                    </div>
+                    <input id="hp" class="form-control" placeholder="Hp" type="number" aria-label="hp" min="0"
+                        aria-describedby="nr" formControlName="hp">
+                </div>
+            </div>
+            <div class="col">
+                <label for="atk">ATK</label>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="nr">#</span>
+                    </div>
+                    <input id="atk" class="form-control" placeholder="Atk" type="number" aria-label="atk" min="0"
+                        aria-describedby="nr" formControlName="atk">
+                </div>
+            </div>
+            <div class="col">
+                <label for="def">Def</label>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="nr">#</span>
+                    </div>
+                    <input id="def" class="form-control" placeholder="Def" type="number" aria-label="def" min="0"
+                        aria-describedby="nr" formControlName="def">
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <label for="spd">Spd</label>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="nr">#</span>
+                    </div>
+                    <input id="spd" class="form-control" placeholder="Spd" type="number" aria-label="spd" min="80"
+                        aria-describedby="nr" formControlName="spd">
+                </div>
+            </div>
+            <div class="col">
+                <label for="ctr">Crit. Rate</label>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="perc">%</span>
+                    </div>
+                    <input id="ctr" class="form-control" placeholder="Crit. Rate" type="number" aria-label="ctr" min="0"
+                        aria-describedby="perc" formControlName="ctr">
+                </div>
+            </div>
+            <div class="col">
+                <label for="ctd">Crit. Damage</label>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="perc">%</span>
+                    </div>
+                    <input id="ctd" class="form-control" placeholder="Crit. Damage" type="number" aria-label="ctd" min="0"
+                        aria-describedby="perc" formControlName="ctd">
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <label for="acc">Accuracy</label>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="perc">%</span>
+                    </div>
+                    <input id="acc" class="form-control" placeholder="Acc" type="number" aria-label="acc" min="0"
+                        aria-describedby="perc" formControlName="acc">
+                </div>
+            </div>
+            <div class="col">
+                <label for="res">Resistance</label>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="perc">%</span>
+                    </div>
+                    <input id="res" class="form-control" placeholder="Resistance" type="number" aria-label="res" min="0"
+                        aria-describedby="perc" formControlName="res">
+                </div>
+            </div>
+            <div class="col">
+                <label for="primStats">Primary Stats</label>
+                <div class="input-group mb-3">
+                    <ng-select [multiple]="true" formControlName="primary_stats" placeholder="Empty">
+                        <ng-option *ngFor="let stat of ['Atk', 'Def', 'Hp']" [value]="stat">{{stat}}</ng-option>
+                    </ng-select>
+                </div>
+            </div>
+        </div>
 
         <button class="btn btn-dark" type="submit">Save</button>
 
