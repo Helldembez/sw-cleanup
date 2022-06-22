@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { getProperties } from '../global/functions';
 import { Properties, BuildType } from '../global/models';
+import { Rune } from '../runes/models/rune';
+import { ImporterService } from '../services/importer.service';
 
 @Component({
   selector: 'app-options',
@@ -40,7 +42,7 @@ export class OptionsComponent implements OnInit {
     { id: 4, name: "No gem/grinds" },
   ]
 
-  constructor(private fb: FormBuilder) { }
+  constructor(private fb: FormBuilder, private service: ImporterService) { }
 
   ngOnInit(): void {
     const properties: Properties = getProperties()
@@ -82,5 +84,8 @@ export class OptionsComponent implements OnInit {
         return value;
       }
     }))
+
+    const runes = this.service.getRunes().map(it=> new Rune(it))
+    this.service.storeRunes(runes)
   }
 }

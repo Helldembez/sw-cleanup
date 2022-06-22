@@ -88,7 +88,7 @@ export class RuneService {
     };
 
     constructor(private pipe: DecimalPipe, service: ImporterService) {
-        this.originalRunes = [...service.getRunes()]
+        this.originalRunes = [...service.getRunesForView()]
         console.log(this.originalRunes.length)
         this._search$.pipe(
             tap(() => this._loading$.next(true)),

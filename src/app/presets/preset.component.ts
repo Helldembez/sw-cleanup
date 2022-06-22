@@ -1,6 +1,8 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from "@angular/core";
 import { FormBuilder, FormGroup } from "@angular/forms";
 import { asStringList, BuildType, PrimaryStat, RuneSet, Slot, Stat } from "../global/models";
+import { Rune } from "../runes/models/rune";
+import { ImporterService } from "../services/importer.service";
 import { getPresets } from "./models/default-presets";
 import { Preset } from "./models/preset";
 import { PresetInstance } from "./models/preset-instance";
@@ -22,7 +24,7 @@ export class PresetComponent implements OnChanges {
     return keys.slice(keys.length / 2).filter(it => it !== RuneSet[RuneSet.Immemoral]);
   }
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private service: ImporterService) {
     var keys = Object.keys(Stat);
     let stats = keys.slice(keys.length / 2).filter(it => it !== Stat[Stat.EMPTY]);
     this.stats2 = stats.filter(it => !["CtR%", "CtD%", "Acc%", "Res%"].includes(it))
@@ -132,6 +134,8 @@ export class PresetComponent implements OnChanges {
         return value;
       }
     }))
-    // recalculate runes values before saving?
+
+    const runes = this.service.getRunes().map(it=> new Rune(it))
+    this.service.storeRunes(runes)
   }
 }

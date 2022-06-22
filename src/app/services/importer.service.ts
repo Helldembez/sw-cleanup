@@ -25,7 +25,7 @@ export class ImporterService {
     return runes.length + equipedRunes.length
   }
 
-  getRunes(): Array<RuneView> {
+  getRunesForView(): Array<RuneView> {
     let runes: Array<Rune> = new Array<Rune>()
     Object.assign(runes, JSON.parse(window.localStorage.getItem("runes"), (key, value) => this.deserialize(key, value)))
     return runes.map(it => {
@@ -50,6 +50,16 @@ export class ImporterService {
       rune.location = it.location
       return rune
     })
+  }
+
+  getRunes(): Array<Rune> {
+    let runes: Array<Rune> = new Array<Rune>()
+    Object.assign(runes, JSON.parse(window.localStorage.getItem("runes"), (key, value) => this.deserialize(key, value)))
+    return runes;
+  }
+
+  storeRunes(runes: Array<Rune>) {
+    window.localStorage.setItem("runes", JSON.stringify(runes))
   }
 
   clear() {

@@ -170,7 +170,7 @@ class PresetInstance {
     }
     const sub1Grind = value.isEmpty() ? this.preset.powerGemGrindValues.get(sub1Stat).grind : value.grind >= this.preset.powerGemGrindValues.get(value.stat).grind ? value.grind : this.preset.powerGemGrindValues.get(sub1Stat).grind //sub1 or value.stat?
 
-    return new Value(sub1Stat, sub1Value, value.reapp, sub1Grind)
+    return new Value(sub1Stat, Math.round(sub1Value), value.reapp, sub1Grind)
   }
 
   private calculateValueForPrefix(rune: Rune): number {
