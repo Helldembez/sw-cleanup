@@ -6,8 +6,8 @@ import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { DecimalPipe } from '@angular/common';
 import { debounceTime, delay, switchMap, tap } from 'rxjs/operators';
 import { SortColumn, SortDirection } from './sortable.directive';
-import { RuneView } from './runes.component';
-import { ImporterService } from '../importer.service';
+import { ImporterService } from '../services/importer.service';
+import { RuneView } from './models/rune-view';
 
 interface SearchResult {
     runes: RuneView[];
@@ -23,6 +23,7 @@ interface State {
     slot: number;
     level: number;
     mainstat: string;
+    location: string;
     sortColumn: SortColumn;
     sortDirection: SortDirection;
 }
@@ -44,19 +45,24 @@ function cmp_str(a: string, b: string) {
     return (b.length > 0 && a !== b)
 }
 
+function includes_str(a: string, b: string) {
+    return (b.length > 0 && !a.toLowerCase().includes(b.toLowerCase()))
+}
+
 function cmp_num(a: number, b: number, match: boolean) {
     return match ? (b > 0 && a != b) : (b > 0 && a < b)
 }
 
 function matches(rune: RuneView, state: State, pipe: PipeTransform) {
-    return (
+    return !(
         cmp_str(rune.build, state.build) ||
         cmp_str(rune.set, state.set) ||
         cmp_str(rune.action, state.action) ||
         cmp_str(rune.mainstat.split(' ')[1], state.mainstat) ||
         cmp_num(rune.slot, state.slot, true) ||
-        cmp_num(rune.level, state.level, false)
-    ) ? false : true
+        cmp_num(rune.level, state.level, false) ||
+        includes_str(rune.location, state.location)
+    )
 }
 
 @Injectable({ providedIn: 'root' })
@@ -76,12 +82,13 @@ export class RuneService {
         slot: 0,
         level: 0,
         mainstat: '',
+        location: '',
         sortColumn: '',
         sortDirection: ''
     };
 
     constructor(private pipe: DecimalPipe, service: ImporterService) {
-        this.originalRunes = [...service.getRunes()]
+        this.originalRunes = [...service.getRunesForView()]
         console.log(this.originalRunes.length)
         this._search$.pipe(
             tap(() => this._loading$.next(true)),
@@ -108,6 +115,7 @@ export class RuneService {
     get slot() { return this._state.slot; }
     get level() { return this._state.level; }
     get mainstat() { return this._state.mainstat; }
+    get location() { return this._state.location; }
 
     set page(page: number) { this._set({ page }); }
     set pageSize(pageSize: number) { this._set({ pageSize }); }
@@ -117,6 +125,7 @@ export class RuneService {
     set slot(slot: number) { this._set({ slot }); }
     set level(level: number) { this._set({ level }); }
     set mainstat(mainstat: string) { this._set({ mainstat }); }
+    set location(location: string) { this._set({ location }); }
     set sortColumn(sortColumn: SortColumn) { this._set({ sortColumn }); }
     set sortDirection(sortDirection: SortDirection) { this._set({ sortDirection }); }
 
@@ -145,6 +154,7 @@ export class RuneService {
         this._state.slot = 0
         this._state.level = 0
         this._state.mainstat = ''
+        this._state.location = ''
         this._search$.next();
     }
 }

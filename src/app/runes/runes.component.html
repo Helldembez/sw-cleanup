@@ -51,6 +51,11 @@
                     <option *ngFor="let build of BuildType()" value="{{build}}">{{ build }}</option>
                 </select>
             </div>
+            <label for="table-location-search" class="col-xs-3 col-sm-auto col-form-label">Location:</label>
+            <div class="col-xs-3 col-sm-auto">
+                <input id="table-location-search" type="text" class="form-control" name="location"
+                    [(ngModel)]="service.location">
+            </div>
             <div class="col-xs-3 col-sm-auto">
                 <button type="button" class="btn btn-danger" (click)="clear()">Clear</button>
             </div>
@@ -75,6 +80,7 @@
                 <th sortable="build" (sort)="onSort($event)">Build Type</th>
                 <th colspan="4">Statistical assumption of what rune will roll/gem/grind into</th>
                 <th>Sub to gem</th>
+                <th>Location</th>
             </thead>
             <tbody>
                 <tr *ngFor="let rune of runes$ | async">
@@ -108,6 +114,9 @@
                     <td>{{rune.bestSub3}}</td>
                     <td>{{rune.bestSub4}}</td>
                     <td>{{rune.slotToGem}}</td>
+                    <td>
+                        <ngb-highlight [result]="rune.location" [term]="service.location"></ngb-highlight>
+                    </td>
                 </tr>
             </tbody>
         </table>

@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { BuildType } from '../home/models';
-import { getProperties, Properties } from '../home/values';
+import { getProperties } from '../global/functions';
+import { Properties, BuildType } from '../global/models';
+import { Rune } from '../runes/models/rune';
+import { ImporterService } from '../services/importer.service';
 
 @Component({
   selector: 'app-options',
@@ -40,32 +42,22 @@ export class OptionsComponent implements OnInit {
     { id: 4, name: "No gem/grinds" },
   ]
 
-  presetValues = [
-    { id: -3 },
-    { id: -2 },
-    { id: -1 },
-    { id: 0 },
-    { id: 1 },
-    { id: 2 },
-    { id: 3 }
-  ]
-
-  constructor(private fb: FormBuilder) { }
+  constructor(private fb: FormBuilder, private service: ImporterService) { }
 
   ngOnInit(): void {
     const properties: Properties = getProperties()
     this.optionsForm = this.fb.group({
       level: properties.level,
       brokenRunes: properties.brokenRunes,
-      powerUp: properties.powerUp ,
-      gemGrind: properties.gemGrind,  
+      powerUp: properties.powerUp,
+      gemGrind: properties.gemGrind,
       FastDD: properties.Focus.get(BuildType['Fast DD']),
       SlowDD: properties.Focus.get(BuildType['Slow DD']),
       DefDD: properties.Focus.get(BuildType['Def DD']),
       Bomber: properties.Focus.get(BuildType.Bomber),
       Support: properties.Focus.get(BuildType.Support),
-      PvPDef: properties.Focus.get(BuildType['PvP Def']) ,
-      Bruiser: properties.Focus.get(BuildType.Bruiser)
+      PvPDef: properties.Focus.get(BuildType['PvP Def']),
+      Bruiser: properties.Focus.get(BuildType.Bruiser),
     });
   }
 
@@ -83,7 +75,7 @@ export class OptionsComponent implements OnInit {
     properties.Focus.set(BuildType['PvP Def'], this.optionsForm.value["PvPDef"])
     properties.Focus.set(BuildType.Bruiser, this.optionsForm.value["Bruiser"])
     window.localStorage.setItem("properties", JSON.stringify(properties, (key, value) => {
-      if(value instanceof Map) {
+      if (value instanceof Map) {
         return {
           dataType: 'Map',
           value: Array.from(value.entries()),
@@ -92,5 +84,8 @@ export class OptionsComponent implements OnInit {
         return value;
       }
     }))
+
+    const runes = this.service.getRunes().map(it=> new Rune(it))
+    this.service.storeRunes(runes)
   }
 }

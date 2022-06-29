@@ -1,5 +1,5 @@
 import { Directive, EventEmitter, Input, Output } from '@angular/core';
-import { RuneView } from './runes.component';
+import { RuneView } from './models/rune-view';
 
 export type SortColumn = keyof RuneView | '';
 export type SortDirection = 'asc' | 'desc' | '';

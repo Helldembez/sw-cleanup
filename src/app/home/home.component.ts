@@ -1,10 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { ImporterService } from '../importer.service';
-import { Rune, RuneSet, Stat, presets, Preset, BuildType } from "./models"
-import { Action, Slot } from "./values"
-
-const fs = window.require('fs')
+import { ImporterService } from '../services/importer.service';
 
 @Component({
   selector: 'app-home',

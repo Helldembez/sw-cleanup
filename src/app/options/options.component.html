@@ -1,68 +1,87 @@
-<p>options works!</p>
-<form [formGroup]="optionsForm" (ngSubmit)="submit()">
+<div class="sw-container container">
+    <form [formGroup]="optionsForm" (ngSubmit)="submit()">
+        <div class="mb-3 row">
+            <div class="col-xs-3 col-sm-auto">
+                <label>Rune Quality</label>
+                <select class="form-select" formControlName="level">
+                    <option [ngValue]="null" disabled>Select Level</option>
+                    <option *ngFor="let a of levels" [ngValue]="a.id">{{a.name}}</option>
+                </select>
+            </div>
+
+            <div class="col-xs-3 col-sm-auto">
+                <label>Power Up Policy</label>
+                <select class="form-select" formControlName="powerUp">
+                    <option [ngValue]="null" disabled>Select power up</option>
+                    <option *ngFor="let a of powerUp" [ngValue]="a.id">{{a.name}}</option>
+                </select>
+            </div>
+
+            <div class="col-xs-3 col-sm-auto">
+                <label>Broken Runes</label>
+                <select class="form-select" formControlName="brokenRunes">
+                    <option [ngValue]="null" disabled>Select Broken runes</option>
+                    <option *ngFor="let a of brokenRunes" [ngValue]="a.id">{{a.name}}</option>
+                </select>
+            </div>
+            <div class="col-xs-3 col-sm-auto">
+                <label>Gems/Grinds</label>
+                <select class="form-select" formControlName="gemGrind">
+                    <option [ngValue]="null" disabled>Select power up</option>
+                    <option *ngFor="let a of gemGrind" [ngValue]="a.id">{{a.name}}</option>
+                </select>
+            </div>
+        </div>
+
+        <h5>Preset Focus(+3/-3)</h5>
+        <div class="row">
+            +: Keep more
+            -: Sell more
+        </div>
+        <div class="mb-3 row">
+            
+            
+            <div class="col-xs-3 col-sm-auto">
+                <label>Fast DD</label>
+                <input class="form-control" type="number" id="FastDD" min="-3" max="3" formControlName="FastDD"
+                    [value]="FastDD">
+            </div>
+            <div class="col-xs-3 col-sm-auto">
+                <label>Slow DD</label>
+                <input class="form-control" type="number" id="SlowDD" min="-3" max="3" formControlName="SlowDD"
+                    [value]="SlowDD">
+            </div>
+            <div class="col-xs-3 col-sm-auto">
+                <label>Def DD</label>
+                <input class="form-control" type="number" id="DefDD" min="-3" max="3" formControlName="DefDD"
+                    [value]="DefDD">
+            </div>
+            <div class="col-xs-3 col-sm-auto">
+                <label>Bomber</label>
+                <input class="form-control" type="number" id="Bomber" min="-3" max="3" formControlName="Bomber"
+                    [value]="Bomber">
+            </div>
+            <div class="col-xs-3 col-sm-auto">
+                <label>Support</label>
+                <input class="form-control" type="number" id="Support" min="-3" max="3" formControlName="Support"
+                    [value]="Support">
+            </div>
+            <div class="col-xs-3 col-sm-auto">
+                <label>PvP Def</label>
+                <input class="form-control" type="number" id="PvPDef" min="-3" max="3" formControlName="PvPDef"
+                    [value]="PvPDef">
+            </div>
+            <div class="col-xs-3 col-sm-auto">
+                <label for="Bruiser">Bruiser</label>
+                <input class="form-control" type="number" id="Bruiser" min="-3" max="3" formControlName="Bruiser"
+                    [value]="Bruiser">
+            </div>
+        </div>
 
 
-    <label>Rune Quality</label>
-    <select formControlName="level">
-        <option [ngValue]="null" disabled>Select Level</option>
-        <option *ngFor="let a of levels" [ngValue]="a.id">{{a.name}}</option>
-    </select>
-    <label>Broken Runes</label>
-    <select formControlName="brokenRunes">
-        <option [ngValue]="null" disabled>Select Broken runes</option>
-        <option *ngFor="let a of brokenRunes" [ngValue]="a.id">{{a.name}}</option>
-    </select>
-    <label>Power Up Policy</label>
-    <select formControlName="powerUp">
-        <option [ngValue]="null" disabled>Select power up</option>
-        <option *ngFor="let a of powerUp" [ngValue]="a.id">{{a.name}}</option>
-    </select>
-    <label>Gems/Grinds</label>
-    <select formControlName="gemGrind">
-        <option [ngValue]="null" disabled>Select power up</option>
-        <option *ngFor="let a of gemGrind" [ngValue]="a.id">{{a.name}}</option>
-    </select>
-    <br />
-    <h5>Preset Focus(+3/-3)</h5><br />
-    +: Keep more<br />
-    -: Sell more<br />
-    <label>Fast DD</label>
-    <select formControlName="FastDD">
-        <option [ngValue]="null" disabled>Select preset</option>
-        <option *ngFor="let a of presetValues" [ngValue]="a.id">{{a.id}}</option>
-    </select>
-    <label>Slow DD</label>
-    <select formControlName="SlowDD">
-        <option [ngValue]="null" disabled>Select power up</option>
-        <option *ngFor="let a of presetValues" [ngValue]="a.id">{{a.id}}</option>
-    </select>
-    <label>Def DD</label>
-    <select formControlName="DefDD">
-        <option [ngValue]="null" disabled>Select power up</option>
-        <option *ngFor="let a of presetValues" [ngValue]="a.id">{{a.id}}</option>
-    </select>
-    <br />
-    <label>Bomber</label>
-    <select formControlName="Bomber">
-        <option [ngValue]="null" disabled>Select power up</option>
-        <option *ngFor="let a of presetValues" [ngValue]="a.id">{{a.id}}</option>
-    </select>
-    <label>Support</label>
-    <select formControlName="Support">
-        <option [ngValue]="null" disabled>Select power up</option>
-        <option *ngFor="let a of presetValues" [ngValue]="a.id">{{a.id}}</option>
-    </select>
-    <label>PvP Def</label>
-    <select formControlName="PvPDef">
-        <option [ngValue]="null" disabled>Select power up</option>
-        <option *ngFor="let a of presetValues" [ngValue]="a.id">{{a.id}}</option>
-    </select>
-    <label>Bruiser</label>
-    <select formControlName="Bruiser">
-        <option [ngValue]="null" disabled>Select power up</option>
-        <option *ngFor="let a of presetValues" [ngValue]="a.id">{{a.id}}</option>
-    </select>
 
-    <button type="submit">Submit</button>
 
-</form>
+        <button class="btn btn-dark" type="submit">Save</button>
+
+    </form>
+</div>
