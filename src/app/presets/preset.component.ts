@@ -31,6 +31,7 @@ export class PresetComponent implements OnChanges {
     this.stats4 = stats.filter(it => !["Spd", "Acc%", "Res%"].includes(it))
     this.stats6 = stats.filter(it => !["CtR%", "CtD%", "Spd"].includes(it))
   }
+
   ngOnChanges(changes: SimpleChanges): void {
     if (this.preset) {
       this.presets = getPresets()

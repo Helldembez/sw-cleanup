@@ -42,6 +42,16 @@ export class OptionsComponent implements OnInit {
     { id: 4, name: "No gem/grinds" },
   ]
 
+  
+  get FastDD() { return this.optionsForm.controls.FastDD.value }
+  get SlowDD() { return this.optionsForm.controls.SlowDD.value }
+  get DefDD() { return this.optionsForm.controls.DefDD.value }
+  get Bomber() { return this.optionsForm.controls.Bomber.value }
+  get Support() { return this.optionsForm.controls.Support.value }
+  get PvPDef() { return this.optionsForm.controls.PvPDef.value }
+  get Bruiser() { return this.optionsForm.controls.Bruiser.value }
+  
+
   constructor(private fb: FormBuilder, private service: ImporterService) { }
 
   ngOnInit(): void {

@@ -122,8 +122,8 @@ export class RuneService {
     set build(build: string) { this._set({ build }); }
     set set(set: string) { this._set({ set }); }
     set action(action: string) { this._set({ action }); }
-    set slot(slot: number) { this._set({ slot }); }
-    set level(level: number) { this._set({ level }); }
+    set slot(slot: any) { slot = parseInt(slot); this._set({ slot }); }
+    set level(level: any) { level = parseInt(level);  this._set({ level }); }
     set mainstat(mainstat: string) { this._set({ mainstat }); }
     set location(location: string) { this._set({ location }); }
     set sortColumn(sortColumn: SortColumn) { this._set({ sortColumn }); }

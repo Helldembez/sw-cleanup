@@ -15,6 +15,8 @@ export class PresetsComponent implements OnInit {
     return keys.slice(keys.length / 2);
   }
 
+  buildType
+
   constructor() {
     this.presets = getPresets() 
   }
